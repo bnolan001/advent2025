@@ -2,34 +2,27 @@ import os
 
 
 def get_largest_joltage(num_str):
-    joltage = ["0"] * 12
-    largest = ["0"] * 12
-    for a in range(len(num_str) - 11):
-        joltage[0] = num_str[a]
-        for b in range(a + 1,len(num_str) - 10):
-            joltage[1] = num_str[b]
-            for c in range(b + 1,len(num_str) - 9):
-                joltage[2] = num_str[c]
-                for d in range(c + 1,len(num_str) - 8):
-                    joltage[3] = num_str[d]
-                    for e in range(d + 1,len(num_str) - 7):
-                        joltage[4] = num_str[e]
-                        for f in range(e + 1, len(num_str) - 6):
-                            joltage[5] = num_str[f]
-                            for g in range(f + 1,len(num_str) - 5):
-                                joltage[6] = num_str[g]
-                                for h in range(g + 1,len(num_str) - 4):
-                                    joltage[7] = num_str[h]
-                                    for i in range(h + 1,len(num_str) - 3):
-                                        joltage[8] = num_str[i]
-                                        for j in range(i + 1,len(num_str) - 2):
-                                            joltage[9] = num_str[j]
-                                            for k in range(j + 1, len(num_str) - 1):
-                                                joltage[10] = num_str[k]
-                                                for l in range(k + 1,len(num_str)):
-                                                    joltage[11] = num_str[l]
-                                                    if joltage > largest:
-                                                        largest = list(joltage)
+    
+    unique_nums = list(set([char for char in num_str]))
+    unique_nums.sort(reverse=True)
+    largest = []
+    prev_idx = 0
+    
+    while len(largest) != 12:
+        restart = False
+        for i in unique_nums:   
+            i_str = str(i)
+            while len(largest) < 12 and num_str.count(i_str, prev_idx) > 0:
+                idx = num_str.index(i_str, prev_idx)
+                if (len(num_str) - idx >= 12 - len(largest)):
+                    largest += [num_str[idx]]
+                    prev_idx = idx + 1
+                    restart = True
+                    break
+                else:
+                    break
+            if restart:
+                break
 
     print(largest)
     return int("".join(largest))
