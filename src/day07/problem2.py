@@ -9,7 +9,6 @@ class BeamNode:
         self.right = None
         self.data = coords
 
-
 # Helper function to display a 2D grid with spacing between rows
 def print_map(map):
     for item in map:
@@ -44,7 +43,6 @@ def process_beams(data):
                         if cb.data == parent:
                             cb.left = beam_node
                     new_beams += [beam_node]
-                    #print(parent, "left child", beam_node.data)
                 
                 # If beam hits a | mirror above and there's empty space to the right, split right
                 if beams[i-1][s_idx] == '|' and s_idx < len(beams[i]) - 1 and beams[i][s_idx + 1] != '^':
@@ -55,9 +53,7 @@ def process_beams(data):
                         if cb.data == parent:
                             cb.right = beam_node
                     new_beams += [beam_node]
-                    
-                    #print(parent, "right child", beam_node.data)
-                
+              
                 s_idx += 1
              
             
@@ -71,7 +67,6 @@ def process_beams(data):
                         if cb.data == parent:
                             cb.center = beam_node
                     new_beams += [beam_node]                    
-                    #print(parent, "center child", beam_node.data)
                     
             current_beams = new_beams
                         
@@ -80,7 +75,6 @@ def process_beams(data):
             s_idx = beams[i].index('S')
             beams[i][s_idx] = '|'
             beam_map.data = (i, s_idx)
-            #print("Starting at", beam_map.data)
             current_beams += [beam_map]
             
         # If row is completely empty, propagate | beams from above
@@ -96,8 +90,6 @@ def process_beams(data):
                             cb.center = beam_node
                     new_beams += [beam_node]                    
                     
-                    #print(beam_node.data, "center")
-
             if len(new_beams) > 0:
                 current_beams = new_beams
     
@@ -106,16 +98,17 @@ def process_beams(data):
 
 def count_routes(beam):
     count = 0
+    # utilize a cache to skip routes we already calculated
+    if beam.data in cache:
+        return cache[beam.data]
     if beam.left != None:
-        #print("Left", beam.left.data)
         count += count_routes(beam.left)
     if beam.center != None:
-        #print("Center", beam.center.data)
         count += count_routes(beam.center)
     if beam.right != None:
-        #print("Right", beam.right.data)
         count += 1
         count += count_routes(beam.right)
+    cache[beam.data] = count
     return count
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -133,9 +126,7 @@ with open(path, 'r') as file:
     
     # Process the beam data and count splits
     (routes, beam_map) = process_beams(data)
-    print("-----------")
-    #print_map(beam_map)
-    print("-----------")
+    cache = {}
     result = count_routes(routes) + 1
     print(result) 
     
